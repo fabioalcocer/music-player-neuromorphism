@@ -4,10 +4,18 @@ import songs from '../data/songs'
 function Player() {
   const [currentSong, setCurrentSong] = useState(0)
   const [audio, setAudio] = useState(songs[0])
+  const [repeatSong, setRepeatSong] = useState(false)
+
+  const [timeSong, setTimeSong] = useState({
+    currentTime: '00:00',
+    duration: 0,
+  })
+
   const audioPlayer = useRef(null)
+  const playerProgress = useRef(null)
+  const playerVolume = useRef(null)
   const btnPlayIcon = useRef(null)
   const btnRepeatIcon = useRef(null)
-  const playerVolume = useRef(null)
 
   useEffect(() => {
     updatePlayer()
@@ -46,19 +54,54 @@ function Player() {
     setAudio(song)
   }
 
-  const toggleRepeatSong = () => {
-    btnRepeatIcon.current.classList.toggle('btn-activated')
-  }
-
   const changeVolume = () => {
     const { value } = playerVolume.current
     audioPlayer.current.volume = value
   }
 
+  const timeUpdate = () => {
+    const { currentTime, duration } = audioPlayer.current
+
+    if (isNaN(duration)) return
+
+    playerProgress.current.max = duration
+    playerProgress.current.value = currentTime
+
+    setTimeSong({
+      currentTime: formatSecondsToMinutes(
+        audioPlayer.current.currentTime
+      ),
+      duration: formatSecondsToMinutes(audioPlayer.current.duration),
+    })
+  }
+
+  const formatSecondsToMinutes = (seconds = 0.0) => {
+    return new Date(seconds * 1000).toISOString().slice(14, 19)
+  }
+
+  const changeTime = () => {
+    audioPlayer.current.currentTime = playerProgress.current.value
+  }
+
+  const toggleRepeatSong = () => {
+    setRepeatSong(!repeatSong)
+    btnRepeatIcon.current.classList.toggle('btn-activated')
+  }
+
+  const ended = () => {
+    repeatSong ? togglePlaySong() : changeSong(true)
+  }
+
   return (
     <main className='container'>
       <div className='player'>
-        <audio ref={audioPlayer} src={audio.path}></audio>
+        <audio
+          ref={audioPlayer}
+          src={audio.path}
+          volume={0}
+          onTimeUpdate={timeUpdate}
+          onEnded={ended}
+        ></audio>
         <p className='song-status'>Now Playing</p>
         <img
           alt='cover song'
@@ -70,14 +113,17 @@ function Player() {
 
         <div className='player-progress'>
           <div className='progress-values'>
-            <span>--:--</span>
-            <span>--:--</span>
+            <span>{timeSong.currentTime}</span>
+            <span>
+              {formatSecondsToMinutes(audioPlayer.current?.duration)}
+            </span>
           </div>
           <input
+            ref={playerProgress}
             type='range'
             name=''
-            id='player-progress'
-            defaultValue={50}
+            defaultValue={0}
+            onChange={changeTime}
           />
         </div>
 
@@ -103,7 +149,7 @@ function Player() {
           </button>
 
           <div className='dropdown'>
-            <button id='btn-volume' className='btn btn-volume'>
+            <button className='btn btn-volume'>
               <i className='bi bi-volume-up-fill'></i>
             </button>
 
@@ -111,7 +157,6 @@ function Player() {
               <input
                 onChange={changeVolume}
                 type='range'
-                id='player-volume'
                 ref={playerVolume}
                 defaultValue={1}
                 min={0}
