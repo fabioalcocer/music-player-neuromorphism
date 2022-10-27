@@ -5,7 +5,6 @@ function Player() {
   const [currentSong, setCurrentSong] = useState(0)
   const [audio, setAudio] = useState(songs[0])
   const [repeatSong, setRepeatSong] = useState(false)
-
   const [timeSong, setTimeSong] = useState({
     currentTime: '00:00',
     duration: 0,
@@ -23,33 +22,31 @@ function Player() {
 
   const togglePlaySong = () => {
     if (audioPlayer.current.paused) {
-      audioPlayer.current.play()
       btnPlayIcon.current.classList.replace(
         'bi-play-fill',
         'bi-pause-fill'
       )
+      audioPlayer.current.play()
     } else {
-      audioPlayer.current.pause()
       btnPlayIcon.current.classList.replace(
         'bi-pause-fill',
         'bi-play-fill'
       )
+      audioPlayer.current.pause()
     }
   }
 
   const changeSong = (next = true) => {
     if (next && currentSong < songs.length - 1) {
-      setCurrentSong((currentSong) => currentSong + 1)
+      setCurrentSong(() => currentSong + 1)
     } else if (!next && currentSong > 0) {
-      setCurrentSong((currentSong) => currentSong - 1)
-    } else {
-      return
+      setCurrentSong(() => currentSong - 1)
     }
-
-    togglePlaySong()
   }
 
   const updatePlayer = () => {
+    audioPlayer.current.volume = 0.1
+
     const song = songs[currentSong]
     setAudio(song)
   }
@@ -98,10 +95,11 @@ function Player() {
         <audio
           ref={audioPlayer}
           src={audio.path}
-          volume={0}
           onTimeUpdate={timeUpdate}
           onEnded={ended}
-        ></audio>
+          onCanPlay={() => audioPlayer.current.play()}
+        />
+
         <p className='song-status'>Now Playing</p>
         <img
           alt='cover song'
@@ -121,7 +119,6 @@ function Player() {
           <input
             ref={playerProgress}
             type='range'
-            name=''
             defaultValue={0}
             onChange={changeTime}
           />
