@@ -1,15 +1,16 @@
 body {
   min-height: 100vh;
-  background-color: #dfdfdf;
+  background-color: #eaeaea;
   color: #030303;
   overflow: hidden;
 }
 
 .container {
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  padding: .4rem;
 }
 
 .player {
@@ -136,7 +137,6 @@ body {
 }
 
 .player-buttons .dropdown-content {
-  /* display: none; */
   opacity: 0;
   position: absolute;
   left: 16px;
@@ -170,7 +170,46 @@ body {
 }
 
 .player-buttons .dropdown:hover .dropdown-content {
-  /* display: block; */
   transition: all 0.4s ease;
   opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .player {
+    padding: 48px 16px;
+  }
+  .player-buttons .btn {
+    width: 42px;
+    height: 42px;
+  }
+
+  .btn.btn-play {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .player-buttons .btn.btn-play i {
+    display: inline-block;
+    margin: 4px 0 0 2px;
+  }
+
+  .player-buttons .btn.btn-repeat {
+    width: 30px;
+    height: 30px;
+  }
+
+  .player-buttons .btn.btn-play {
+    width: 56px;
+    height: 56px;
+  }
+
+  .player-buttons .btn.btn-volume {
+    width: 30px;
+    height: 30px;
+  }
+
+  .dropdown-content {
+    display: none;
+  }
 }
