@@ -45,8 +45,6 @@ function Player() {
   }
 
   const updatePlayer = () => {
-    audioPlayer.current.volume = 0.1
-
     const song = songs[currentSong]
     setAudio(song)
   }
