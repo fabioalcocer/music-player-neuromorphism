@@ -175,6 +175,12 @@ body {
 }
 
 @media (max-width: 768px) {
+  .container {
+    align-items: flex-start;
+    padding: .4rem;
+    padding-top: 2rem;
+  }
+
   .player {
     padding: 48px 16px;
   }
